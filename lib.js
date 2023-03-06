@@ -27,6 +27,10 @@ function log(msg) {
     eLog.text(msg);
 }
 
+var notes = {
+
+};
+
 // Function triggered when WEBMIDI.js is ready
 function onEnabled() {
 
@@ -41,13 +45,20 @@ function onEnabled() {
             let n = e.note.name;
             if(e.note.accidental)
                 n += e.note.accidental;
-            log(`Note on: ${n}`);
+            log(`Note pressed: ${n}`);
+            notes[n] = true;
             $('body').css('background-color', colours[n]);
         });
         
         device.channels[1].addListener("noteoff", e => {
-            log("Note off");
-            $('body').css('background-color', 'white');
+            let n = e.note.name;
+            if(e.note.accidental)
+                n += e.note.accidental;
+            delete notes[n];
+            if(Object.keys(notes).length == 0) {
+                log("All notes off");
+                $('body').css('background-color', 'white');
+            }
         });
       });
     }
